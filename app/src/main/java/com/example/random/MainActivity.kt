@@ -3,7 +3,6 @@ package com.example.random
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -16,8 +15,6 @@ import java.util.*
 // tuto https://www.arthlimchiu.com/2019/10/02/make-a-movies-app-part-1.html
 
 class MainActivity : AppCompatActivity() {
-
-    private lateinit var scrollView: ScrollView
 
     private lateinit var popularMovies: RecyclerView
     private lateinit var popularMoviesAdapter: MoviesAdapter
@@ -129,6 +126,7 @@ class MainActivity : AppCompatActivity() {
         intent.putExtra(MOVIE_RATING, movie.rating)
         intent.putExtra(MOVIE_RELEASE_DATE, movie.releaseDate)
         intent.putExtra(MOVIE_OVERVIEW, movie.overview)
+        intent.putExtra(MOVIE_ID, movie.id)
         startActivity(intent)
     }
 
@@ -295,8 +293,6 @@ class MainActivity : AppCompatActivity() {
                     .transform(CenterCrop())
                     .into(latestPoster)
         }
-
-        Log.d("Latest", "_______________________" + movie.toString())
     }
 
     private fun onError() {

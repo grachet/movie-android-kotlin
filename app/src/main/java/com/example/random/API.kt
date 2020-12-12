@@ -2,6 +2,7 @@ package com.example.random
 
 import retrofit2.Call
 import retrofit2.http.GET
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 const val API_KEY: String = "YOUR_API_KEY"
@@ -36,4 +37,11 @@ interface Api {
     fun getLatest(
             @Query("api_key") apiKey: String = API_KEY
     ): Call<Movie>
+
+    @GET("movie/{movie_id}/recommendations")
+    fun getRecommendations(
+            @Path("movie_id") movieId: Long,
+            @Query("api_key") apiKey: String = API_KEY,
+            @Query("page") page: Int
+    ): Call<GetMoviesResponse>
 }

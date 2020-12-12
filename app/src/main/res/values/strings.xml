@@ -14,4 +14,7 @@
     <string name="movies_in_your_theaters">Movie in your theaters</string>
 
     <string name="refresh">(Click on picture to refresh)</string>
+
+    <string name="recommendations">Recommendations</string>
+    <string name="based_on_this_movie">Based on this movie</string>
 </resources>
