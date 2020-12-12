@@ -110,4 +110,67 @@ object MoviesRepository {
                     }
                 })
     }
+
+    fun getNowPlayingMovies(
+            page: Int = 1,
+            onSuccess: (movies: List<Movie>) -> Unit,
+            onError: () -> Unit
+    ) {
+        api.getNowPlaying(page = page)
+                .enqueue(object : Callback<GetMoviesResponse> {
+                    override fun onResponse(
+                            call: Call<GetMoviesResponse>,
+                            response: Response<GetMoviesResponse>
+                    ) {
+                        if (response.isSuccessful) {
+                            val responseBody = response.body()
+
+                            if (responseBody != null) {
+                                onSuccess.invoke(responseBody.movies)
+                            } else {
+                                onError.invoke()
+                            }
+                        } else {
+                            onError.invoke()
+                        }
+                    }
+
+                    override fun onFailure(call: Call<GetMoviesResponse>, t: Throwable) {
+                        onError.invoke()
+                    }
+                })
+    }
+
+    fun getLatestMovie(
+            onSuccess: (movie: Movie) -> Unit,
+            onError: () -> Unit
+    ) {
+        api.getLatest()
+                .enqueue(object : Callback<Movie> {
+                    override fun onResponse(
+                            call: Call<Movie>,
+                            response: Response<Movie>
+                    ) {
+
+                        Log.d("response",response.toString());
+
+                        if (response.isSuccessful) {
+                            val responseBody = response.body()
+
+                            if (responseBody != null) {
+                                onSuccess.invoke(responseBody)
+                            } else {
+                                onError.invoke()
+                            }
+                        } else {
+                            onError.invoke()
+                        }
+                    }
+
+                    override fun onFailure(call: Call<Movie>, t: Throwable) {
+                        onError.invoke()
+                    }
+                })
+    }
+
 }

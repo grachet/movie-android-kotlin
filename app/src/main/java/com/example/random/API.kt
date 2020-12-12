@@ -25,4 +25,15 @@ interface Api {
             @Query("api_key") apiKey: String = API_KEY,
             @Query("page") page: Int
     ): Call<GetMoviesResponse>
+
+    @GET("movie/now_playing")
+    fun getNowPlaying(
+            @Query("api_key") apiKey: String = API_KEY,
+            @Query("page") page: Int
+    ): Call<GetMoviesResponse>
+
+    @GET("movie/latest")
+    fun getLatest(
+            @Query("api_key") apiKey: String = API_KEY
+    ): Call<Movie>
 }

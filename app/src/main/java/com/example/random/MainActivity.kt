@@ -1,19 +1,23 @@
 package com.example.random
 
+import android.annotation.SuppressLint
 import android.content.Intent
-import com.example.random.MoviesRepository.getPopularMovies
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.widget.Toast
+import android.widget.*
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.random.R
-import com.example.random.MoviesRepository
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.CenterCrop
+import java.text.SimpleDateFormat
+import java.util.*
 
 // tuto https://www.arthlimchiu.com/2019/10/02/make-a-movies-app-part-1.html
 
 class MainActivity : AppCompatActivity() {
+
+    private lateinit var scrollView: ScrollView
 
     private lateinit var popularMovies: RecyclerView
     private lateinit var popularMoviesAdapter: MoviesAdapter
@@ -30,6 +34,19 @@ class MainActivity : AppCompatActivity() {
     private lateinit var upcomingMoviesLayoutMgr: LinearLayoutManager
     private var upcomingMoviesPage = 1
 
+    private lateinit var nowPlayingMovies: RecyclerView
+    private lateinit var nowPlayingMoviesAdapter: MoviesAdapter
+    private lateinit var nowPlayingMoviesLayoutMgr: LinearLayoutManager
+    private var nowPlayingMoviesPage = 1
+
+    private lateinit var latestPoster: ImageView
+    private lateinit var latestTitle: TextView
+    private lateinit var latestRating: RatingBar
+    private lateinit var latestReleaseDate: TextView
+    private lateinit var latestOverview: TextView
+    private lateinit var latestRefreshText: TextView
+
+
     ////////////////////////////////
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,7 +62,7 @@ class MainActivity : AppCompatActivity() {
                 false
         )
         popularMovies.layoutManager = popularMoviesLayoutMgr
-        popularMoviesAdapter = MoviesAdapter(mutableListOf()) {movie -> showMovieDetails(movie)}
+        popularMoviesAdapter = MoviesAdapter(mutableListOf()) { movie -> showMovieDetails(movie)}
         popularMovies.adapter = popularMoviesAdapter
 
         /////////////////////
@@ -57,7 +74,7 @@ class MainActivity : AppCompatActivity() {
                 false
         )
         topRatedMovies.layoutManager = topRatedMoviesLayoutMgr
-        topRatedMoviesAdapter = MoviesAdapter(mutableListOf()){movie -> showMovieDetails(movie)}
+        topRatedMoviesAdapter = MoviesAdapter(mutableListOf()){ movie -> showMovieDetails(movie)}
         topRatedMovies.adapter = topRatedMoviesAdapter
 
         /////////////////////
@@ -69,14 +86,39 @@ class MainActivity : AppCompatActivity() {
                 false
         )
         upcomingMovies.layoutManager = upcomingMoviesLayoutMgr
-        upcomingMoviesAdapter = MoviesAdapter(mutableListOf()){movie -> showMovieDetails(movie)}
+        upcomingMoviesAdapter = MoviesAdapter(mutableListOf()){ movie -> showMovieDetails(movie)}
         upcomingMovies.adapter = upcomingMoviesAdapter
+
+        /////////////////
+
+        nowPlayingMovies = findViewById(R.id.nowPlaying_movies)
+        nowPlayingMoviesLayoutMgr = LinearLayoutManager(
+                this,
+                LinearLayoutManager.HORIZONTAL,
+                false
+        )
+        nowPlayingMovies.layoutManager = nowPlayingMoviesLayoutMgr
+        nowPlayingMoviesAdapter = MoviesAdapter(mutableListOf()){ movie -> showMovieDetails(movie)}
+        nowPlayingMovies.adapter = nowPlayingMoviesAdapter
+
+        /////////////////
+
+         latestPoster= findViewById(R.id.latest_movie_poster)
+         latestTitle= findViewById(R.id.latest_movie_title)
+         latestRating= findViewById(R.id.latest_movie_rating)
+         latestReleaseDate= findViewById(R.id.latest_movie_release_date)
+         latestOverview= findViewById(R.id.latest_movie_overview)
+        latestRefreshText= findViewById(R.id.refresh_text)
+
+        latestPoster.setOnClickListener { refreshLatest()}
 
         /////////////////
 
         getPopularMovies()
         getTopRatedMovies()
         getUpcomingMovies()
+        getNowPlayingMovies()
+        getLatestMovie()
     }
 
     private fun showMovieDetails(movie: Movie) {
@@ -184,7 +226,78 @@ class MainActivity : AppCompatActivity() {
         attachUpcomingMoviesOnScrollListener()
     }
 
-    ////////////////////////////
+
+    //////////////////////////// nowPlaying
+
+    private fun getNowPlayingMovies() {
+        MoviesRepository.getNowPlayingMovies(
+                nowPlayingMoviesPage,
+                ::onNowPlayingMoviesFetched,
+                ::onError
+        )
+    }
+
+    private fun onNowPlayingMoviesFetched(movies: List<Movie>) {
+        nowPlayingMoviesAdapter.appendMovies(movies)
+        attachNowPlayingMoviesOnScrollListener()
+    }
+
+    private fun attachNowPlayingMoviesOnScrollListener() {
+        nowPlayingMovies.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                val totalItemCount = nowPlayingMoviesLayoutMgr.itemCount
+                val visibleItemCount = nowPlayingMoviesLayoutMgr.childCount
+                val firstVisibleItem = nowPlayingMoviesLayoutMgr.findFirstVisibleItemPosition()
+
+                if (firstVisibleItem + visibleItemCount >= totalItemCount / 2) {
+                    nowPlayingMovies.removeOnScrollListener(this)
+                    nowPlayingMoviesPage++
+                    getNowPlayingMovies()
+                }
+            }
+        })
+    }
+
+    //////////////////////////// latest
+
+    private fun getLatestMovie() {
+        MoviesRepository.getLatestMovie(
+                ::onLatestMoviesFetched,
+                ::onError
+        )
+    }
+
+    private fun refreshLatest() {
+        getLatestMovie()
+        Toast.makeText(this, "Refreshed", Toast.LENGTH_SHORT).show()
+    }
+
+    @SuppressLint("SetTextI18n")
+    private fun onLatestMoviesFetched(movie: Movie) {
+
+        val sdf = SimpleDateFormat("HH:mm", Locale.getDefault())
+        val currentTime: String = sdf.format(Date())
+        latestRefreshText.text = "Click on picture to refresh (last $currentTime)"
+
+        latestTitle.text = movie.title
+        latestRating.rating =  movie.rating/2
+        latestReleaseDate.text= movie.releaseDate
+        latestOverview.text= movie.overview
+
+        if (movie.posterPath.isNullOrEmpty()) {
+            Glide.with(this)
+                    .load("https://www.labaleine.fr/sites/default/files/image-not-found.jpg")
+                    .transform(CenterCrop())
+                    .into(latestPoster)
+        } else {
+            Glide.with(this)
+                    .load("https://image.tmdb.org/t/p/w342${movie.posterPath}")
+                    .transform(CenterCrop())
+                    .into(latestPoster)
+        }
+
+        Log.d("Latest", "_______________________" + movie.toString())
+    }
 
     private fun onError() {
         Toast.makeText(this, getString(R.string.error_fetch_movies), Toast.LENGTH_SHORT).show()

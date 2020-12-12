@@ -7,4 +7,11 @@
     <string name="highest_rated_movies">Highest rated movies of all time</string>
     <string name="upcoming">Upcoming</string>
     <string name="stay_updated">Stay updated with the latest movies</string>
+
+    <string name="latest">Latest Movie</string>
+    <string name="the_most_recent_movie_created">The most recent movie created</string>
+    <string name="now_playing">Now Playing</string>
+    <string name="movies_in_your_theaters">Movie in your theaters</string>
+
+    <string name="refresh">(Click on picture to refresh)</string>
 </resources>
