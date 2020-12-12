@@ -5,8 +5,6 @@ import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
 
-const val API_KEY: String = "YOUR_API_KEY"
-
 interface Api {
 
     @GET("movie/popular")
