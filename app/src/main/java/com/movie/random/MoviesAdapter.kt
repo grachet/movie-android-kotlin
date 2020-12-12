@@ -1,4 +1,4 @@
-package com.example.random
+package com.movie.random
 
 import android.view.LayoutInflater
 import android.view.View

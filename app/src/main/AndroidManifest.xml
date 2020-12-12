@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.random">
+    package="com.movie.random">
 
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -11,8 +11,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Random">
-        <activity android:name=".MovieDetailsActivity"></activity>
-        <activity android:name=".MainActivity">
+        <activity android:name="com.movie.random.MovieDetailsActivity"></activity>
+        <activity android:name="com.movie.random.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

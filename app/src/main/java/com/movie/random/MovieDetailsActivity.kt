@@ -1,4 +1,4 @@
-package com.example.random
+package com.movie.random
 
 import android.content.Intent
 import android.os.Bundle

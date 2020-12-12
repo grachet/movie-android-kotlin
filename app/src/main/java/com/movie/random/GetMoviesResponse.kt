@@ -1,4 +1,4 @@
-package com.example.random
+package com.movie.random
 
 import com.google.gson.annotations.SerializedName
 

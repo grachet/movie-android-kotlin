@@ -1,4 +1,4 @@
-package com.example.random
+package com.movie.random
 
 import android.util.Log
 import retrofit2.Call

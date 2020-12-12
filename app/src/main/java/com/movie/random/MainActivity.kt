@@ -1,4 +1,4 @@
-package com.example.random
+package com.movie.random
 
 import android.annotation.SuppressLint
 import android.content.Intent

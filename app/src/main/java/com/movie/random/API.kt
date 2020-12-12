@@ -1,4 +1,4 @@
-package com.example.random
+package com.movie.random
 
 import retrofit2.Call
 import retrofit2.http.GET
